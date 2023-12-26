@@ -3,10 +3,10 @@ from constants.backgrounds import background
 from config.keybinds import *
 
 class InventoryScreen():
-    def __init__(self, game):
+    def __init__(self, game) -> None:
         self.game = game
         
-    def run_inventory(self):
+    def run_inventory(self) -> None:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.game.exit_game()
@@ -16,5 +16,5 @@ class InventoryScreen():
                 if event.key == INVENTORY_KEY:
                     self.game.start_game()
                 
-    def draw_inventory(self):
+    def draw_inventory(self) -> None:
         self.game.screen.blit(background, (0,0))

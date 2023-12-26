@@ -1,7 +1,9 @@
 from utils.pg import pg
+from classes.Game import Game
+
 
 class MenuItem:
-    def __init__(self, game, x: int, y: int, image, scale = 1):
+    def __init__(self, game : Game, x: int, y: int, image : pg.image, scale = 1) -> None:
         self.game = game
         witdth = image.get_width()
         height = image.get_height()
@@ -9,9 +11,9 @@ class MenuItem:
         self.rect = self.image.get_rect()
         self.rect.topleft = (x,y)
         
-    def draw(self):
+    def draw(self) -> None:
         self.game.screen.blit(self.image, (self.rect.x, self.rect.y))
         
-    def click(self):
+    def click(self) -> None:
         pos = pg.mouse.get_pos()
         return pos[1] in range(self.rect.top,self.rect.bottom) and pos[0] in range(self.rect.left, self.rect.right)

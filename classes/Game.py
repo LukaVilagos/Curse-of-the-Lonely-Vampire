@@ -1,7 +1,11 @@
 from utils.pg import pg
+from classes.Menu import Menu
+from classes.Play import Play
+from classes.InventoryScreen import InventoryScreen
+from classes.Options import Options
 
 class Game:
-    def __init__(self):
+    def __init__(self) -> None:
         self.screen_width = 1280
         self.scree_height = 720
         self.fps = 60
@@ -20,7 +24,7 @@ class Game:
         self.obstacle_sprites = pg.sprite.Group()
         self.ground_sprites = pg.sprite.Group()
         
-    def events(self, menu, play, inventory_screen, options):
+    def events(self, menu : Menu, play : Play, inventory_screen : InventoryScreen, options : Options) -> None:
         if self.menu:
             menu.run_menu()
         elif self.play:
@@ -33,7 +37,7 @@ class Game:
     def update(self):
         self.all_sprites.update()
         
-    def draw(self, menu, play, inventory_screen, options):
+    def draw(self, menu : Menu, play : Play, inventory_screen : InventoryScreen, options : Options) -> None:
         self.clock.tick(self.fps)  
            
         if self.menu:
@@ -47,33 +51,33 @@ class Game:
             
         pg.display.update()
         
-    def main(self, menu, play, inventory_screen, options):
+    def main(self, menu : Menu, play : Play, inventory_screen : InventoryScreen, options : Options)-> None:
         while self.running:
             self.events(menu, play, inventory_screen, options)
             self.update()
             self.draw(menu, play, inventory_screen, options)
                            
-    def pause_game(self):
+    def pause_game(self) -> None:
         self.menu = True
         
-    def start_game(self):
+    def start_game(self) -> None:
         self.menu = False
         self.play = True
         self.inventory = False
         self.options = False
         
-    def show_options(self):
+    def show_options(self) -> None:
         self.menu = False
         self.play = False
         self.inventory = False
         self.options = True
         
-    def show_inventory(self):
+    def show_inventory(self) -> None:
         self.menu = False
         self.play = False
         self.inventory = True
         self.options = False
         
-    def exit_game(self):
+    def exit_game(self) -> None:
         self.playing = False
         self.running = False

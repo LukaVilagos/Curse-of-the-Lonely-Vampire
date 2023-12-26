@@ -1,8 +1,10 @@
 from utils.pg import pg
+from classes.Game import Game
+from classes.CameraGroup import CameraGroup
 
 class Ground(pg.sprite.Sprite):
-    def __init__(self, game, pos, group, image):
-        super().__init__(group)
+    def __init__(self, game : Game, pos: (), camera_group : CameraGroup, image : pg.image) -> None:
+        super().__init__(camera_group)
         self.game = game
         self.image = image
         self.rect = self.image.get_rect(topleft = pos)

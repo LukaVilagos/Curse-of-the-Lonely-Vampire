@@ -1,12 +1,14 @@
 from utils.pg import pg
+from classes.Game import Game
 from classes.Character import Character
 from config.keybinds import *
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, game, pos, character: Character, camera_group : pg.sprite.Sprite, scale = 1):
+    def __init__(self, game : Game, pos : (), character: Character, camera_group : pg.sprite.Sprite, scale = 1) -> None:
         super().__init__(camera_group)
         self.game = game
         self.character = character
+        self.health_points = self.character.health_points
         
         witdth = self.character.image.get_width()
         height = self.character.image.get_height()
@@ -22,16 +24,13 @@ class Player(pg.sprite.Sprite):
         
         pg.sprite.Sprite.__init__(self, self.game.player_sprites)
         
-    def input(self, enemies):
+    def input(self, enemies : []) -> None:
         keys = pg.key.get_pressed()
-        # Create a vector from the key inputs
         move_vec = pg.math.Vector2(keys[MOVE_RIGHT_KEY] - keys[MOVE_LEFT_KEY], keys[MOVE_DOWN_KEY] - keys[MOVE_UP_KEY])
-
-        # Normalize the vector and scale it by the speed
+        
         if move_vec.x != 0 or move_vec.y != 0:
             move_vec.scale_to_length(self.character.speed)
 
-        # Update the position and facing direction
         self.x_change += move_vec.x
         self.y_change += move_vec.y
         if move_vec.x > 0:
@@ -50,14 +49,17 @@ class Player(pg.sprite.Sprite):
                 self.attack(enemies)
         
             
-    def attack(self, enemies : []):
+    def attack(self, enemies : []) -> None:
         for enemy in enemies:
             enemy.monster.reduce_health_points(enemy, self.character.equipped.damage)
             
-    def die(self):
+    def reduce_health_points(self, value: int) -> None:
+        self.health_points -= value
+    
+    def die(self) -> None:
         self.game.player_sprites.remove(self)
             
-    def collide_obstacle(self, direction):
+    def collide_obstacle(self, direction : str) -> None:
         hits = pg.sprite.spritecollide(self, self.game.obstacle_sprites, False)
         
         if hits: 
@@ -73,7 +75,7 @@ class Player(pg.sprite.Sprite):
                 if self.y_change < 0:
                     self.rect.y = hits[0].rect.bottom
                     
-    def collide_enemy(self):
+    def collide_enemy(self) -> None:
         hits = pg.sprite.spritecollide(self, self.game.enemy_sprites, False)
         if hits:
             for sprite in hits:
@@ -91,7 +93,7 @@ class Player(pg.sprite.Sprite):
                 case "right":
                     self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
   
-    def custom_update(self, enemies: []):
+    def custom_update(self, enemies: []) -> None:
         self.input(enemies)
         now = pg.time.get_ticks()
         if now - self.character.last >= self.character.endurance:

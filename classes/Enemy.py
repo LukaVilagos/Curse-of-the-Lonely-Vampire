@@ -1,12 +1,15 @@
 from utils.pg import pg
+from classes.Game import Game
 from classes.Monster import Monster
+from classes.CameraGroup import CameraGroup
 from constants.images import exit_button_img
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self, game, pos: (), monster : Monster, camera_group,scale = 1):
+    def __init__(self, game : Game, pos: (), monster : Monster, camera_group : CameraGroup, scale = 1) -> None:
         super().__init__(camera_group)
         self.game = game
         self.monster = monster
+        self.health_points = self.monster.health_points
         self.x = pos[0]
         self.y = pos[1]
         self.scale = scale
@@ -20,10 +23,16 @@ class Enemy(pg.sprite.Sprite):
         self.alive = True
         pg.sprite.Sprite.__init__(self, self.game.enemy_sprites)
         
-    def draw(self):
+    def reduce_health_points(self, value : int) -> None:
+        if self.health_points >= 0 and self.alive:
+            self.health_points -= value
+        else:
+            self.die()
+        
+    def draw(self) -> None:
         self.screen.blit(self.image, (self.rect.x, self.rect.y))
         
-    def die(self):
+    def die(self) -> None:
         self.alive = False
         witdth = exit_button_img.get_width()
         height = exit_button_img.get_height()

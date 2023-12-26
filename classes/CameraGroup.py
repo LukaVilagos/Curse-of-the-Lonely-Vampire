@@ -1,9 +1,10 @@
 from utils.pg import pg
-from constants.images import tree_img
 from constants.backgrounds import background
+from classes.Game import Game
+from classes.Player import Player
 
 class CameraGroup(pg.sprite.Group):
-    def __init__(self, game, tilemap):
+    def __init__(self, game : Game, tilemap : []) -> None:
         super().__init__()
         self.display_surface = pg.display.get_surface()
         self.game = game
@@ -32,7 +33,7 @@ class CameraGroup(pg.sprite.Group):
         self.internal_offset.x = self.internal_surf_size[0] // 2 - self.half_w
         self.internal_offset.y = self.internal_surf_size[1] // 2 - self.half_h
         
-    def box_target_camera(self,target):
+    def box_target_camera(self,target) -> None:
         if target.rect.left < self.camera_rect.left:
             self.camera_rect.left = target.rect.left
         if target.rect.right > self.camera_rect.right:
@@ -45,12 +46,12 @@ class CameraGroup(pg.sprite.Group):
         self.offset.x = self.camera_rect.left - self.camera_borders['left']
         self.offset.y = self.camera_rect.top - self.camera_borders['top']
         
-    def draw_sprites(self, sprites):
+    def draw_sprites(self, sprites : pg.sprite.Sprite) -> None:
         for sprite in sprites:
             offset_pos = sprite.rect.topleft - self.offset + self.internal_offset
             self.internal_surf.blit(sprite.image,offset_pos)
   
-    def custom_draw(self, player):
+    def custom_draw(self, player : Player) -> None:
         
         self.box_target_camera(player)
         

@@ -7,7 +7,7 @@ from constants.images import ground_tile, wall_tile, box_tile
 from constants.monsters import VAMPIRE
 from constants.characters import CHARACTER
 
-def build_map(self):
+def build_map(self) -> None:
     for i, row in enumerate(self.tilemap):
         for j, column in enumerate(row):
             Ground(self.game, get_sprite_pos(j, i, self.game.tile_size), self.camera, ground_tile)
