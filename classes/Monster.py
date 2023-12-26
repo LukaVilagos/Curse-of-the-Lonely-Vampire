@@ -9,6 +9,7 @@ class Monster:
         self.health_points = health_points
         self.loot = loot
         self.speed = 5
+        self.equipped = None
         
     def reduce_health_points(self, enemy, value):
         if self.health_points > 1 and enemy.alive:

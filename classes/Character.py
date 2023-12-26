@@ -27,3 +27,6 @@ class Character:
         self.inventory = inventory
         self.equipped = False
         self.last = pg.time.get_ticks()
+        
+    def reduce_health_points(self, value):
+        health_points -= value

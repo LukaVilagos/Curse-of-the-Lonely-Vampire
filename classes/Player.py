@@ -54,6 +54,9 @@ class Player(pg.sprite.Sprite):
         for enemy in enemies:
             enemy.monster.reduce_health_points(enemy, self.character.equipped.damage)
             
+    def die(self):
+        self.game.player_sprites.remove(self)
+            
     def collide_obstacle(self, direction):
         hits = pg.sprite.spritecollide(self, self.game.obstacle_sprites, False)
         
@@ -73,6 +76,11 @@ class Player(pg.sprite.Sprite):
     def collide_enemy(self):
         hits = pg.sprite.spritecollide(self, self.game.enemy_sprites, False)
         if hits:
+            for sprite in hits:
+                self.character.health_points -= sprite.monster.equipped.damage
+                if self.character.health_points <= 0:
+                    self.die()
+                
             match self.facing:
                 case "up":
                     self.y_change += self.character.speed * (1 / self.character.weight) * 1000
