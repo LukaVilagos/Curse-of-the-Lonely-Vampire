@@ -1,0 +1,1 @@
+CHARACTER_CLASSES = ["Fighter", "Wizard", "Cleric"]

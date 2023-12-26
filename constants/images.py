@@ -1,0 +1,26 @@
+from utils.pg import pg
+import os
+
+start_button_img_file_path = os.path.join('images', 'start_button.png') 
+options_button_img_file_path = os.path.join('images', 'options_button.png')
+exit_button_img_file_path = os.path.join('images', 'exit_button.png')
+player_file_path = os.path.join('images', 'player.png')
+ground_file_path = os.path.join('images', 'ground.png')
+tree_file_path = os.path.join('images', 'tree.png')
+vampiro_file_path = os.path.join('images','vampiro.png')
+sword_file_path = os.path.join('images','sword.png')
+wall_tile_path = os.path.join('images', 'wall_tile.png')
+box_tile_path = os.path.join('images', 'box_tile.png')
+ground_tile_path = os.path.join('images', 'ground_tile.png')
+
+start_button_img = pg.image.load(start_button_img_file_path).convert_alpha()
+options_button_img = pg.image.load(options_button_img_file_path).convert_alpha()
+exit_button_img = pg.image.load(exit_button_img_file_path).convert_alpha()
+player_img = pg.image.load(player_file_path).convert_alpha()
+ground_img = pg.image.load(ground_file_path).convert_alpha()
+tree_img = pg.image.load(tree_file_path).convert_alpha()
+monster_img = pg.image.load(vampiro_file_path).convert_alpha()
+sword_img = pg.image.load(sword_file_path).convert_alpha()
+wall_tile = pg.image.load(wall_tile_path).convert_alpha()
+box_tile = pg.image.load(box_tile_path).convert_alpha()
+ground_tile = pg.image.load(ground_tile_path).convert_alpha()
