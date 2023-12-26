@@ -17,9 +17,8 @@ class Enemy(pg.sprite.Sprite):
         self.rect.topleft = (self.x,self.y)
         self.velX = 0
         self.velY = 0
-        self.speed = self.monster.speed
         self.alive = True
-        pg.sprite.Sprite.__init__(self, self.game.active_sprites)
+        pg.sprite.Sprite.__init__(self, self.game.enemy_sprites)
         
     def draw(self):
         self.screen.blit(self.image, (self.rect.x, self.rect.y))

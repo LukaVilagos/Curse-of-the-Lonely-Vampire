@@ -1,5 +1,5 @@
 from classes.Inventory import Inventory
-from classes.Item import Item
+from utils.pg import pg
 
 def health_point_calc(charcter_class):
     match charcter_class:
@@ -22,5 +22,8 @@ class Character:
         self.health_points_max = health_point_calc(charcter_class)
         self.health_points = self.health_points_max
         self.speed = 5
+        self.weight = 100
+        self.endurance = 500
         self.inventory = inventory
         self.equipped = False
+        self.last = pg.time.get_ticks()

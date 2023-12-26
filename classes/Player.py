@@ -20,10 +20,7 @@ class Player(pg.sprite.Sprite):
         self.y_change = 0
         self.facing = 'down'
         
-        self.last = pg.time.get_ticks()
-        self.speed = self.character.speed
-        
-        pg.sprite.Sprite.__init__(self, self.game.active_sprites)
+        pg.sprite.Sprite.__init__(self, self.game.player_sprites)
         
     def input(self, enemies):
         keys = pg.key.get_pressed()
@@ -32,7 +29,7 @@ class Player(pg.sprite.Sprite):
 
         # Normalize the vector and scale it by the speed
         if move_vec.x != 0 or move_vec.y != 0:
-            move_vec.scale_to_length(self.speed)
+            move_vec.scale_to_length(self.character.speed)
 
         # Update the position and facing direction
         self.x_change += move_vec.x
@@ -45,11 +42,10 @@ class Player(pg.sprite.Sprite):
             self.facing = 'down'
         elif move_vec.y < 0:
             self.facing = 'up'
-
         
         if keys[ATTACK_KEY]:
             now = pg.time.get_ticks()
-            if now - self.last >= self.character.equipped.cooldown:
+            if now - self.character.equipped.last >= self.character.equipped.cooldown:
                 self.last = now
                 self.attack(enemies)
         
@@ -73,9 +69,26 @@ class Player(pg.sprite.Sprite):
                     self.rect.y = hits[0].rect.top - self.rect.height
                 if self.y_change < 0:
                     self.rect.y = hits[0].rect.bottom
+                    
+    def collide_enemy(self):
+        hits = pg.sprite.spritecollide(self, self.game.enemy_sprites, False)
+        if hits:
+            match self.facing:
+                case "up":
+                    self.y_change += self.character.speed * (1 / self.character.weight) * 1000
+                case "down":
+                    self.y_change -= self.character.speed * (1 / self.character.weight) * 1000
+                case "left":
+                    self.x_change += self.character.speed * (1 / self.character.weight) * 1000
+                case "right":
+                    self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
   
     def custom_update(self, enemies: []):
         self.input(enemies)
+        now = pg.time.get_ticks()
+        if now - self.character.last >= self.character.endurance:
+                self.character.last = now
+                self.collide_enemy()
         
         self.rect.x += self.x_change
         self.collide_obstacle("x")

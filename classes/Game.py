@@ -15,7 +15,8 @@ class Game:
         self.inventory = False
         self.options = False
         self.all_sprites = pg.sprite.LayeredUpdates()
-        self.active_sprites = pg.sprite.Group()
+        self.player_sprites = pg.sprite.Group()
+        self.enemy_sprites = pg.sprite.Group()
         self.obstacle_sprites = pg.sprite.Group()
         self.ground_sprites = pg.sprite.Group()
         
