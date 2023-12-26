@@ -1,11 +1,10 @@
 from utils.pg import pg
-from classes.Game import Game
 from classes.Monster import Monster
 from classes.CameraGroup import CameraGroup
 from constants.images import exit_button_img
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self, game : Game, pos: (), monster : Monster, camera_group : CameraGroup, scale = 1) -> None:
+    def __init__(self, game, pos: (), monster : Monster, camera_group : CameraGroup, scale = 1) -> None:
         super().__init__(camera_group)
         self.game = game
         self.monster = monster

@@ -1,10 +1,9 @@
 from utils.pg import pg
-from classes.Game import Game
 from classes.Character import Character
 from config.keybinds import *
 
 class Player(pg.sprite.Sprite):
-    def __init__(self, game : Game, pos : (), character: Character, camera_group : pg.sprite.Sprite, scale = 1) -> None:
+    def __init__(self, game, pos : (), character: Character, camera_group : pg.sprite.Sprite, scale = 1) -> None:
         super().__init__(camera_group)
         self.game = game
         self.character = character

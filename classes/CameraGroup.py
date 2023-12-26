@@ -1,10 +1,9 @@
 from utils.pg import pg
 from constants.backgrounds import background
-from classes.Game import Game
 from classes.Player import Player
 
 class CameraGroup(pg.sprite.Group):
-    def __init__(self, game : Game, tilemap : []) -> None:
+    def __init__(self, game, tilemap : []) -> None:
         super().__init__()
         self.display_surface = pg.display.get_surface()
         self.game = game

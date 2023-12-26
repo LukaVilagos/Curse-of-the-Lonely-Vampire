@@ -1,9 +1,7 @@
 from utils.pg import pg
-from classes.Game import Game
-
 
 class MenuItem:
-    def __init__(self, game : Game, x: int, y: int, image : pg.image, scale = 1) -> None:
+    def __init__(self, game, x: int, y: int, image : pg.image, scale = 1) -> None:
         self.game = game
         witdth = image.get_width()
         height = image.get_height()
