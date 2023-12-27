@@ -26,6 +26,17 @@ class Player(pg.sprite.Sprite):
         
         pg.sprite.Sprite.__init__(self, self.game.player_sprites)
         
+    def knock_back(self):
+        match self.facing:
+            case PlyerFacingDirections.UP.value:
+                self.y_change += self.character.speed * (1 / self.character.weight) * 1000
+            case PlyerFacingDirections.DOWN.value:
+                self.y_change -= self.character.speed * (1 / self.character.weight) * 1000
+            case PlyerFacingDirections.LEFT.value:
+                self.x_change += self.character.speed * (1 / self.character.weight) * 1000
+            case PlyerFacingDirections.RIGHT.value:
+                self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
+        
     def input(self, enemies : []) -> None:
         keys = pg.key.get_pressed()
         move_vec = pg.math.Vector2(keys[MOVE_RIGHT_KEY] - keys[MOVE_LEFT_KEY], keys[MOVE_DOWN_KEY] - keys[MOVE_UP_KEY])
@@ -91,25 +102,17 @@ class Player(pg.sprite.Sprite):
         
         if hits:
             for sprite in hits:
-                self.reduce_health_points(sprite.monster.equipped.damage)
-                
-            match self.facing:
-                case PlyerFacingDirections.UP.value:
-                    self.y_change += self.character.speed * (1 / self.character.weight) * 1000
-                case PlyerFacingDirections.DOWN.value:
-                    self.y_change -= self.character.speed * (1 / self.character.weight) * 1000
-                case PlyerFacingDirections.LEFT.value:
-                    self.x_change += self.character.speed * (1 / self.character.weight) * 1000
-                case PlyerFacingDirections.RIGHT.value:
-                    self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
+                if pg.sprite.collide_mask(self, sprite):
+                    self.reduce_health_points(sprite.monster.equipped.damage)
+                    self.knock_back()
   
     def custom_update(self, enemies: []) -> None:
         self.input(enemies)
         
         now = pg.time.get_ticks()
         if now - self.character.last >= self.character.endurance:
-                self.character.last = now
-                self.collide_enemy()
+            self.character.last = now
+            self.collide_enemy()
         
         self.rect.x += self.x_change
         self.collide_obstacle("x")

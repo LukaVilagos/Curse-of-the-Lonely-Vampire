@@ -1,7 +1,7 @@
 from utils.pg import pg
 from constants.backgrounds import background
 from constants.fonts import font
-from constants.colors import WHITE
+from enums.Colors import Colors
 from classes.MenuItem import MenuItem
 from constants.images import start_button_img, options_button_img, exit_button_img
 from utils.center_image import center_image_vertically
@@ -29,7 +29,7 @@ class Menu:
 
     def draw_menu(self) -> None:
         self.game.screen.blit(background, (0,0))
-        heading = font.render("Curse of the Lonely Vampire", True, WHITE)
+        heading = font.render("Curse of the Lonely Vampire", True, Colors.WHITE.value)
         headingpos = heading.get_rect(centerx=background.get_width() / 2, y=100)
         self.game.screen.blit(heading, headingpos)
         

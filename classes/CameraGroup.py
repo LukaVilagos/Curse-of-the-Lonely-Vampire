@@ -1,6 +1,6 @@
 from utils.pg import pg
 from constants.backgrounds import background
-from classes.Player import Player
+from enums.Colors import Colors
 
 class CameraGroup(pg.sprite.Group):
     def __init__(self, game, tilemap : []) -> None:
@@ -50,11 +50,11 @@ class CameraGroup(pg.sprite.Group):
             offset_pos = sprite.rect.topleft - self.offset + self.internal_offset
             self.internal_surf.blit(sprite.image,offset_pos)
   
-    def custom_draw(self, player : Player) -> None:
+    def custom_draw(self, player) -> None:
         
         self.box_target_camera(player)
         
-        self.internal_surf.fill('#000000')
+        self.internal_surf.fill(Colors.BLACK.value)
 
         ground_offset = self.ground_rect.topleft - self.offset + self.internal_offset
         self.internal_surf.blit(self.ground_surf,ground_offset)

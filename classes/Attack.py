@@ -1,8 +1,10 @@
 from utils.pg import pg
 from random import randint
+from classes.CameraGroup import CameraGroup
+from classes.Item import Item
 
 class Attack(pg.sprite.Sprite):
-    def __init__(self, game, camera_group, weapon, pos) -> None:
+    def __init__(self, game, camera_group : CameraGroup, weapon : Item, pos : ()) -> None:
         super().__init__(camera_group)
         self.game = game
         self.camera_group = camera_group
