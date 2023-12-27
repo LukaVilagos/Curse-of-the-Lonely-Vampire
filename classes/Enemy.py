@@ -5,7 +5,6 @@ from constants.images import exit_button_img
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self, game, pos: (), monster : Monster, camera_group : CameraGroup, scale = 1) -> None:
-        super().__init__(camera_group)
         self.game = game
         self.monster = monster
         self.health_points = self.monster.health_points
@@ -20,7 +19,7 @@ class Enemy(pg.sprite.Sprite):
         self.velX = 0
         self.velY = 0
         self.alive = True
-        pg.sprite.Sprite.__init__(self, self.game.enemy_sprites)
+        super().__init__(camera_group, self.game.enemy_sprites)
         
     def reduce_health_points(self, value : int) -> None:
         self.health_points -= value
