@@ -61,8 +61,8 @@ class CameraGroup(pg.sprite.Group):
         
         self.draw_sprites(self.game.ground_sprites)
         self.draw_sprites(self.game.obstacle_sprites)
-        self.draw_sprites(self.game.player_sprites)
         self.draw_sprites(self.game.enemy_sprites)
+        self.draw_sprites(self.game.player_sprites)
 
         scaled_surf = pg.transform.scale(self.internal_surf,self.internal_surface_size_vector * self.zoom_scale)
         scaled_rect = scaled_surf.get_rect(center = (self.half_w,self.half_h))

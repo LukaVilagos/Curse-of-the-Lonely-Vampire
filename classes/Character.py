@@ -25,4 +25,3 @@ class Character:
         self.endurance = 500
         self.inventory = inventory
         self.equipped = False
-        self.last = pg.time.get_ticks()

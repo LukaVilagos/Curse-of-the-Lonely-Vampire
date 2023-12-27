@@ -23,9 +23,8 @@ class Enemy(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.game.enemy_sprites)
         
     def reduce_health_points(self, value : int) -> None:
-        if self.health_points >= 0 and self.alive:
-            self.health_points -= value
-        else:
+        self.health_points -= value
+        if self.health_points <= 0:
             self.die()
         
     def draw(self) -> None:

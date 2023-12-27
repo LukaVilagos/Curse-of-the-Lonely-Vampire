@@ -24,6 +24,7 @@ class Player(pg.sprite.Sprite):
         self.y_change = 0
         self.facing = PlyerFacingDirections.DOWN.value
         
+        self.last = pg.time.get_ticks()
         pg.sprite.Sprite.__init__(self, self.game.player_sprites)
         
     def knock_back(self):
@@ -110,8 +111,8 @@ class Player(pg.sprite.Sprite):
         self.input(enemies)
         
         now = pg.time.get_ticks()
-        if now - self.character.last >= self.character.endurance:
-            self.character.last = now
+        if now - self.last >= self.character.endurance:
+            self.last = now
             self.collide_enemy()
         
         self.rect.x += self.x_change
