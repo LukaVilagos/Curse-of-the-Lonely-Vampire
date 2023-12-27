@@ -9,7 +9,6 @@ class Play:
         self.tilemap = tilemap
         self.camera = camera
         self.player = None
-        self.enemies = []
         self.create_tilemap()
         
     def run_play(self) -> None:
@@ -24,8 +23,7 @@ class Play:
                     
     def draw_play(self) -> None:
         self.player.custom_update()
-        self.camera.update()
-        self.camera.custom_draw(self.player)
+        self.camera.draw(self.player)
         
     def create_tilemap(self) -> None:
         build_map(self)

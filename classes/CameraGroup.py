@@ -2,9 +2,8 @@ from utils.pg import pg
 from constants.backgrounds import background
 from enums.Colors import Colors
 
-class CameraGroup(pg.sprite.Group):
+class CameraGroup:
     def __init__(self, game) -> None:
-        super().__init__()
         self.display_surface = pg.display.get_surface()
         self.game = game
 
@@ -37,7 +36,7 @@ class CameraGroup(pg.sprite.Group):
             offset_pos = sprite.rect.topleft - self.offset
             self.ground_surf.blit(sprite.image,offset_pos)
   
-    def custom_draw(self, player) -> None:
+    def draw(self, player) -> None:
         
         self.box_target_camera(player)
         

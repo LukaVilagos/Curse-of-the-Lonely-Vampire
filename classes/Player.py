@@ -22,6 +22,7 @@ class Player(pg.sprite.Sprite):
         self.y_change = 0
         self.facing = PlyerFacingDirections.DOWN.value
         
+        self.delay = 10
         self.last = pg.time.get_ticks()
         super().__init__(self.game.player_sprites)
         
@@ -36,29 +37,29 @@ class Player(pg.sprite.Sprite):
             case PlyerFacingDirections.RIGHT.value:
                 self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
         
-    def input(self) -> None:
+    def input(self):
         keys = pg.key.get_pressed()
         move_vec = pg.math.Vector2(keys[MOVE_RIGHT_KEY] - keys[MOVE_LEFT_KEY], keys[MOVE_DOWN_KEY] - keys[MOVE_UP_KEY])
         
+        # Check if the player is changing direction
         if move_vec.x != 0 or move_vec.y != 0:
-            move_vec.scale_to_length(self.character.speed)
+            print(f"move_vec: {move_vec}")
+            print(f"self.facing: {self.facing}")
+            # If the player is already moving in the same direction, scale the vector to the speed
+            if move_vec.x == self.facing.x and move_vec.y == self.facing.y:
+                move_vec.scale_to_length(self.character.speed)
+            # Otherwise, set the vector to zero and decrease the delay
+            else:
+                self.delay -= 1
+                # If the delay reaches zero, reset it and set the facing direction to the move vector
+                if self.delay == 0:
+                    self.delay = 10
+                    # Check if the move vector is zero before normalizing it
+                    if move_vec.length_squared() > 0:
+                        self.facing = move_vec.normalize()
 
         self.x_change += move_vec.x
         self.y_change += move_vec.y
-        if move_vec.x > 0:
-            self.facing = PlyerFacingDirections.RIGHT.value
-        elif move_vec.x < 0:
-            self.facing = PlyerFacingDirections.LEFT.value
-        elif move_vec.y > 0:
-            self.facing = PlyerFacingDirections.DOWN.value
-        elif move_vec.y < 0:
-            self.facing = PlyerFacingDirections.UP.value
-        
-        if keys[ATTACK_KEY]:
-            now = pg.time.get_ticks()
-            if now - self.character.equipped.last >= self.character.equipped.cooldown:
-                self.character.equipped.last = now
-                self.attack()
         
             
     def attack(self) -> None:

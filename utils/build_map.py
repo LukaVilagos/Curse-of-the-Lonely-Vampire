@@ -16,6 +16,6 @@ def build_map(self) -> None:
             elif column == "B":
                 Obstacle(self.game, (get_sprite_pos(j, i, self.game.tile_size)[0] + 18, get_sprite_pos(j, i, self.game.tile_size)[1] + 6), box_tile)
             elif column == 'E':
-                self.enemies.append(Enemy(self.game, get_sprite_pos(j,i,self.game.tile_size), VAMPIRE, 2))
+                Enemy(self.game, get_sprite_pos(j,i,self.game.tile_size), VAMPIRE, 2)
             elif column == 'P':
                 self.player = Player(self.game, get_sprite_pos(j,i,self.game.tile_size), CHARACTER)
