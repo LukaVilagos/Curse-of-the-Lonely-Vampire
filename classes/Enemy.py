@@ -33,8 +33,5 @@ class Enemy(pg.sprite.Sprite):
         
     def die(self) -> None:
         self.alive = False
-        witdth = exit_button_img.get_width()
-        height = exit_button_img.get_height()
-        self.image = pg.transform.scale(exit_button_img, (int(witdth * self.scale), int(height * self.scale)))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (self.x,self.y)
+        self.game.enemy_sprites.remove(self)
+        del self

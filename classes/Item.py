@@ -1,7 +1,9 @@
 from utils.pg import pg
+from constants.images import sword_img
 
 class Item:
-    def __init__(self, name: str, description: str, durability: int, damage: int, range: int, cooldown: int, is_consumable: bool, amount: int, type = "Mele") -> None:
+    def __init__(self, name: str, description: str, durability: int, damage: int, range: int, cooldown: int, is_consumable: bool, amount: int, type = "Mele", image = sword_img) -> None:
+        self.image = image
         self.name = name
         self.description = description
         self.durability_max = durability

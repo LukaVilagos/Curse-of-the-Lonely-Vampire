@@ -1,11 +1,14 @@
 from utils.pg import pg
 from classes.Character import Character
+from classes.Attack import Attack
+from enums.PlayerFacingDirections import PlyerFacingDirections
 from config.keybinds import *
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, pos : (), character: Character, camera_group : pg.sprite.Sprite, scale = 1) -> None:
         super().__init__(camera_group)
         self.game = game
+        self.camera_group = camera_group
         self.character = character
         self.health_points = self.character.health_points
         
@@ -19,7 +22,7 @@ class Player(pg.sprite.Sprite):
         
         self.x_change = 0
         self.y_change = 0
-        self.facing = 'down'
+        self.facing = PlyerFacingDirections.DOWN
         
         pg.sprite.Sprite.__init__(self, self.game.player_sprites)
         
@@ -33,30 +36,39 @@ class Player(pg.sprite.Sprite):
         self.x_change += move_vec.x
         self.y_change += move_vec.y
         if move_vec.x > 0:
-            self.facing = 'right'
+            self.facing = PlyerFacingDirections.RIGHT
         elif move_vec.x < 0:
-            self.facing = 'left'
+            self.facing = PlyerFacingDirections.LEFT
         elif move_vec.y > 0:
-            self.facing = 'down'
+            self.facing = PlyerFacingDirections.DOWN
         elif move_vec.y < 0:
-            self.facing = 'up'
+            self.facing = PlyerFacingDirections.UP
         
         if keys[ATTACK_KEY]:
             now = pg.time.get_ticks()
             if now - self.character.equipped.last >= self.character.equipped.cooldown:
-                self.last = now
+                self.character.equipped.last = now
                 self.attack(enemies)
         
             
     def attack(self, enemies : []) -> None:
-        for enemy in enemies:
-            enemy.monster.reduce_health_points(enemy, self.character.equipped.damage)
+        match self.facing:
+            case PlyerFacingDirections.UP:
+                Attack(self.game, self.camera_group, self.character.equipped, (self.rect.x + 16, self.rect.y - self.game.tile_size + 16))
+            case PlyerFacingDirections.DOWN:
+                Attack(self.game, self.camera_group, self.character.equipped, (self.rect.x + 16, self.rect.y + self.game.tile_size))
+            case PlyerFacingDirections.LEFT:
+                Attack(self.game, self.camera_group, self.character.equipped, (self.rect.x - self.game.tile_size + 16, self.rect.y + 16))
+            case PlyerFacingDirections.RIGHT:
+                Attack(self.game, self.camera_group, self.character.equipped, (self.rect.x + self.game.tile_size + 16, self.rect.y + 16))   
+    
+    def die(self) -> None:
+        self.game.exit_game()
             
     def reduce_health_points(self, value: int) -> None:
         self.health_points -= value
-    
-    def die(self) -> None:
-        self.game.player_sprites.remove(self)
+        if self.health_points <= 0:
+            self.die()
             
     def collide_obstacle(self, direction : str) -> None:
         hits = pg.sprite.spritecollide(self, self.game.obstacle_sprites, False)
@@ -76,24 +88,24 @@ class Player(pg.sprite.Sprite):
                     
     def collide_enemy(self) -> None:
         hits = pg.sprite.spritecollide(self, self.game.enemy_sprites, False)
+        
         if hits:
             for sprite in hits:
-                self.character.health_points -= sprite.monster.equipped.damage
-                if self.character.health_points <= 0:
-                    self.die()
+                self.reduce_health_points(sprite.monster.equipped.damage)
                 
             match self.facing:
-                case "up":
+                case PlyerFacingDirections.UP:
                     self.y_change += self.character.speed * (1 / self.character.weight) * 1000
-                case "down":
+                case PlyerFacingDirections.DOWN:
                     self.y_change -= self.character.speed * (1 / self.character.weight) * 1000
-                case "left":
+                case PlyerFacingDirections.LEFT:
                     self.x_change += self.character.speed * (1 / self.character.weight) * 1000
-                case "right":
+                case PlyerFacingDirections.RIGHT:
                     self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
   
     def custom_update(self, enemies: []) -> None:
         self.input(enemies)
+        
         now = pg.time.get_ticks()
         if now - self.character.last >= self.character.endurance:
                 self.character.last = now

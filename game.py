@@ -19,7 +19,7 @@ def main():
 
     while game.running:
         game.main(menu, play, inventory_screen, options)
-        
+
     pg.quit()
     sys.exit()
     
