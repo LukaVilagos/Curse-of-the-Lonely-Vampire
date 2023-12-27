@@ -11,7 +11,7 @@ from utils.center_image import *
 
 def main():
     game = Game()
-    camera = CameraGroup(game, STAGE_1)
+    camera = CameraGroup(game)
     menu = Menu(game)
     play = Play(game, STAGE_1, camera)
     inventory_screen = InventoryScreen(game)
