@@ -1,12 +1,9 @@
 from utils.pg import pg
-from random import randint
-from classes.CameraGroup import CameraGroup
 from classes.Item import Item
 
 class Attack(pg.sprite.Sprite):
-    def __init__(self, game, camera_group : CameraGroup, weapon : Item, pos : ()) -> None:
+    def __init__(self, game, weapon : Item, pos : ()) -> None:
         self.game = game
-        self.camera_group = camera_group
         self.weapon = weapon
         
         self.image = self.weapon.image
@@ -15,7 +12,7 @@ class Attack(pg.sprite.Sprite):
         self.hit = False
         self.lifespan = 100
         self.last = pg.time.get_ticks()
-        super().__init__(camera_group, self.game.player_sprites)
+        super().__init__(self.game.player_sprites)
         
     def update(self) -> None:
         #if sprite is visible

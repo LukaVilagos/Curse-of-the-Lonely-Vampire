@@ -35,6 +35,7 @@ class Game:
             options.run_options()
             
     def update(self):
+        print(self.all_sprites)
         self.all_sprites.update()
         
     def draw(self, menu : Menu, play : Play, inventory_screen : InventoryScreen, options : Options) -> None:

@@ -10,12 +10,12 @@ from constants.characters import CHARACTER
 def build_map(self) -> None:
     for i, row in enumerate(self.tilemap):
         for j, column in enumerate(row):
-            Ground(self.game, get_sprite_pos(j, i, self.game.tile_size), self.camera, ground_tile)
+            Ground(self.game, get_sprite_pos(j, i, self.game.tile_size), ground_tile)
             if column == "W":
-                Obstacle(self.game, get_sprite_pos(j ,i, self.game.tile_size), self.camera, wall_tile)
+                Obstacle(self.game, get_sprite_pos(j ,i, self.game.tile_size), wall_tile)
             elif column == "B":
-                Obstacle(self.game, (get_sprite_pos(j, i, self.game.tile_size)[0] + 18, get_sprite_pos(j, i, self.game.tile_size)[1] + 6), self.camera, box_tile)
+                Obstacle(self.game, (get_sprite_pos(j, i, self.game.tile_size)[0] + 18, get_sprite_pos(j, i, self.game.tile_size)[1] + 6), box_tile)
             elif column == 'E':
-                self.enemies.append(Enemy(self.game, get_sprite_pos(j,i,self.game.tile_size), VAMPIRE, self.camera, 2))
+                self.enemies.append(Enemy(self.game, get_sprite_pos(j,i,self.game.tile_size), VAMPIRE, 2))
             elif column == 'P':
-                self.player = Player(self.game, get_sprite_pos(j,i,self.game.tile_size), CHARACTER, self.camera)
+                self.player = Player(self.game, get_sprite_pos(j,i,self.game.tile_size), CHARACTER)
