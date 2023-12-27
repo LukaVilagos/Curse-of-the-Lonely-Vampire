@@ -25,7 +25,7 @@ class Player(pg.sprite.Sprite):
         self.last = pg.time.get_ticks()
         super().__init__(self.game.player_sprites)
         
-    def knock_back(self):
+    def knock_back(self) -> None:
         match self.facing:
             case PlyerFacingDirections.UP.value:
                 self.y_change += self.character.speed * (1 / self.character.weight) * 1000
@@ -36,7 +36,7 @@ class Player(pg.sprite.Sprite):
             case PlyerFacingDirections.RIGHT.value:
                 self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
         
-    def input(self, enemies : []) -> None:
+    def input(self) -> None:
         keys = pg.key.get_pressed()
         move_vec = pg.math.Vector2(keys[MOVE_RIGHT_KEY] - keys[MOVE_LEFT_KEY], keys[MOVE_DOWN_KEY] - keys[MOVE_UP_KEY])
         
@@ -58,19 +58,19 @@ class Player(pg.sprite.Sprite):
             now = pg.time.get_ticks()
             if now - self.character.equipped.last >= self.character.equipped.cooldown:
                 self.character.equipped.last = now
-                self.attack(enemies)
+                self.attack()
         
             
-    def attack(self, enemies : []) -> None:
+    def attack(self) -> None:
         match self.facing:
             case PlyerFacingDirections.UP.value:
-                Attack(self.game, self.camera_group, self.character.equipped, (self.rect.x + 16, self.rect.y - self.game.tile_size + 16))
+                Attack(self.game, self.character.equipped, (self.rect.x + 16, self.rect.y - self.game.tile_size + 16))
             case PlyerFacingDirections.DOWN.value:
-                Attack(self.game, self.camera_group, self.character.equipped, (self.rect.x + 16, self.rect.y + self.game.tile_size))
+                Attack(self.game, self.character.equipped, (self.rect.x + 16, self.rect.y + self.game.tile_size))
             case PlyerFacingDirections.LEFT.value:
-                Attack(self.game, self.camera_group, self.character.equipped, (self.rect.x - self.game.tile_size + 16, self.rect.y + 16))
+                Attack(self.game, self.character.equipped, (self.rect.x - self.game.tile_size + 16, self.rect.y + 16))
             case PlyerFacingDirections.RIGHT.value:
-                Attack(self.game, self.camera_group, self.character.equipped, (self.rect.x + self.game.tile_size + 16, self.rect.y + 16))   
+                Attack(self.game, self.character.equipped, (self.rect.x + self.game.tile_size + 16, self.rect.y + 16))   
     
     def die(self) -> None:
         self.game.exit_game()
@@ -105,8 +105,8 @@ class Player(pg.sprite.Sprite):
                     self.reduce_health_points(sprite.monster.equipped.damage)
                     self.knock_back()
   
-    def custom_update(self, enemies: []) -> None:
-        self.input(enemies)
+    def custom_update(self) -> None:
+        self.input()
         
         now = pg.time.get_ticks()
         if now - self.last >= self.character.endurance:

@@ -1,7 +1,6 @@
 from utils.pg import pg
 from utils.build_map import build_map
 from config.keybinds import *
-from constants.backgrounds import background
 from classes.CameraGroup import CameraGroup
 
 class Play:
@@ -24,9 +23,7 @@ class Play:
                     self.game.pause_game()
                     
     def draw_play(self) -> None:
-        self.game.screen.blit(background, (0,0))
-        enemies_within_range = filter(lambda enemy: pg.math.Vector2(self.player.x, self.player.y).distance_to((enemy.x, enemy.y)) < self.player.character.equipped.range * 100 and enemy.alive, self.enemies)
-        self.player.custom_update(list(enemies_within_range))
+        self.player.custom_update()
         self.camera.update()
         self.camera.custom_draw(self.player)
         

@@ -25,8 +25,8 @@ class Attack(pg.sprite.Sprite):
             now = pg.time.get_ticks()
             if now - self.last >= self.lifespan:
                 self.kill()
-        # if it isn't delete it  (WHY DOESN'T IT F**KING DELETE IT)     
-        else: 
+        # if it isn't delete it  
+        else:
             del self
         
     def collide(self) -> None:

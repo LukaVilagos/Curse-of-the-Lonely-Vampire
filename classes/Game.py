@@ -18,7 +18,6 @@ class Game:
         self.play = False
         self.inventory = False
         self.options = False
-        self.all_sprites = pg.sprite.LayeredUpdates()
         self.player_sprites = pg.sprite.Group()
         self.enemy_sprites = pg.sprite.Group()
         self.obstacle_sprites = pg.sprite.Group()
@@ -35,8 +34,10 @@ class Game:
             options.run_options()
             
     def update(self):
-        print(self.all_sprites)
-        self.all_sprites.update()
+        self.player_sprites.update()
+        self.enemy_sprites.update()
+        self.obstacle_sprites.update()
+        self.ground_sprites.update()
         
     def draw(self, menu : Menu, play : Play, inventory_screen : InventoryScreen, options : Options) -> None:
         self.clock.tick(self.fps)  
