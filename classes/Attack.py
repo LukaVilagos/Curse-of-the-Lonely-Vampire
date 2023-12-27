@@ -14,7 +14,7 @@ class Attack(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = pos)
         
         self.hit = False
-        self.lifespan = 300
+        self.lifespan = 100
         self.last = pg.time.get_ticks()
         
         self.random = randint(0,1000)
@@ -23,13 +23,18 @@ class Attack(pg.sprite.Sprite):
     def update(self) -> None:
         print(f"Here {self.random}")
             
-        if self.alive() and not self.hit:
-            self.collide()
+        #if sprite is visible
+        if self.alive():
+            #makes sure each attack can only hit once
+            if not self.hit:
+                self.collide()
             
+            #deletes sprite after some time so that the attack is no longer visible
             now = pg.time.get_ticks()
-            if now - self.last <= self.lifespan:
-                self.last = now
-                
+            if now - self.last >= self.lifespan:
+                self.kill()
+        # if it isn't delete it  (WHY DOESN'T IT F**KING DELETE IT)     
+        else: 
             del self
         
     def collide(self) -> None:
