@@ -43,8 +43,6 @@ class Player(pg.sprite.Sprite):
         
         # Check if the player is changing direction
         if move_vec.x != 0 or move_vec.y != 0:
-            print(f"move_vec: {move_vec}")
-            print(f"self.facing: {self.facing}")
             # If the player is already moving in the same direction, scale the vector to the speed
             if move_vec.x == self.facing.x and move_vec.y == self.facing.y:
                 move_vec.scale_to_length(self.character.speed)
@@ -54,24 +52,32 @@ class Player(pg.sprite.Sprite):
                 # If the delay reaches zero, reset it and set the facing direction to the move vector
                 if self.delay == 0:
                     self.delay = 10
-                    # Check if the move vector is zero before normalizing it
-                    if move_vec.length_squared() > 0:
-                        self.facing = move_vec.normalize()
+                    move_vec.scale_to_length(self.character.speed)
+                    self.facing = move_vec.normalize()
 
+            print(f"move_vec: {move_vec}")
+            print(f"self.facing: {self.facing}")
+            
         self.x_change += move_vec.x
         self.y_change += move_vec.y
         
+        if keys[ATTACK_KEY]:
+            self.attack()
+        
             
     def attack(self) -> None:
-        match self.facing:
-            case PlyerFacingDirections.UP.value:
-                Attack(self.game, self.character.equipped, (self.rect.x + 16, self.rect.y - self.game.tile_size + 16))
-            case PlyerFacingDirections.DOWN.value:
-                Attack(self.game, self.character.equipped, (self.rect.x + 16, self.rect.y + self.game.tile_size))
-            case PlyerFacingDirections.LEFT.value:
-                Attack(self.game, self.character.equipped, (self.rect.x - self.game.tile_size + 16, self.rect.y + 16))
-            case PlyerFacingDirections.RIGHT.value:
-                Attack(self.game, self.character.equipped, (self.rect.x + self.game.tile_size + 16, self.rect.y + 16))   
+        now = pg.time.get_ticks()
+        if now - self.character.equipped.last >= self.character.equipped.cooldown:
+            self.character.equipped.last = now
+            match self.facing:
+                case PlyerFacingDirections.UP.value:
+                    Attack(self.game, self.character.equipped, (self.rect.x + 16, self.rect.y - self.game.tile_size + 16))
+                case PlyerFacingDirections.DOWN.value:
+                    Attack(self.game, self.character.equipped, (self.rect.x + 16, self.rect.y + self.game.tile_size))
+                case PlyerFacingDirections.LEFT.value:
+                    Attack(self.game, self.character.equipped, (self.rect.x - self.game.tile_size + 16, self.rect.y + 16))
+                case PlyerFacingDirections.RIGHT.value:
+                    Attack(self.game, self.character.equipped, (self.rect.x + self.game.tile_size + 16, self.rect.y + 16))   
     
     def die(self) -> None:
         self.game.exit_game()
