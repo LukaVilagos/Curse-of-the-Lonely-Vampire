@@ -1,5 +1,6 @@
 from classes.Inventory import Inventory
 from utils.pg import pg
+from constants.items import BASIC_MACE
 
 def health_point_calc(charcter_class : str):
     match charcter_class:
@@ -25,3 +26,4 @@ class Character:
         self.endurance = 500
         self.inventory = inventory
         self.equipped = False
+        self.mele = BASIC_MACE

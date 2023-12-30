@@ -2,6 +2,7 @@ from utils.pg import pg
 from utils.build_map import build_map
 from config.keybinds import *
 from classes.CameraGroup import CameraGroup
+from classes.Healthbar import Healthbar
 
 class Play:
     def __init__(self, game, tilemap : [], camera : CameraGroup) -> None:

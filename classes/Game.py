@@ -22,6 +22,7 @@ class Game:
         self.enemy_sprites = pg.sprite.Group()
         self.obstacle_sprites = pg.sprite.Group()
         self.ground_sprites = pg.sprite.Group()
+        self.ui_sprites = pg.sprite.Group()
         
     def events(self, menu : Menu, play : Play, inventory_screen : InventoryScreen, options : Options) -> None:
         if self.menu:
@@ -38,6 +39,7 @@ class Game:
         self.enemy_sprites.update()
         self.obstacle_sprites.update()
         self.ground_sprites.update()
+        self.ui_sprites.update()
         
     def draw(self, menu : Menu, play : Play, inventory_screen : InventoryScreen, options : Options) -> None:
         self.clock.tick(self.fps)  
