@@ -10,6 +10,8 @@ class Player(pg.sprite.Sprite):
         self.character = character
         self.health_points = self.character.health_points
         self.speed = self.character.speed
+        self.stamina = self.character.stamina
+        self.invincible = False
         
         witdth = self.character.image.get_width()
         height = self.character.image.get_height()
@@ -26,7 +28,21 @@ class Player(pg.sprite.Sprite):
         self.direction_change_delay = 100
         self.enemy_collision_last = pg.time.get_ticks()
         self.player_movement_last = pg.time.get_ticks()
+        self.player_dodge_last = pg.time.get_ticks()
+        self.stamina_last = pg.time.get_ticks()
+        self.stamina_refill = False
         super().__init__(self.game.player_sprite)
+
+    def refill_stamina(self) -> None:
+        now = pg.time.get_ticks()
+        if now - self.stamina_last >= 1000:
+            self.stamina_refill = True
+            self.stamina_last = now  
+        else:
+            self.stamina_refill = False
+
+        if self.stamina <= 100: 
+            self.stamina += 1
 
     def knock_back(self) -> None:
         match self.facing.normalize():
@@ -51,6 +67,47 @@ class Player(pg.sprite.Sprite):
                 self.y_change -= self.character.speed * (1 / self.character.weight) * 1000
                 self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
                 
+    def dodge(self) -> None:
+        now = pg.time.get_ticks()
+        if self.stamina >= 20 and now - self.player_dodge_last >= 500:
+            match self.facing.normalize():
+                case PlyerFacingDirections.UP.value:
+                    self.y_change -= self.character.speed * (1 / self.character.weight) * 1000
+                case PlyerFacingDirections.DOWN.value:
+                    self.y_change += self.character.speed * (1 / self.character.weight) * 1000
+                case PlyerFacingDirections.LEFT.value:
+                    self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
+                case PlyerFacingDirections.RIGHT.value:
+                    self.x_change += self.character.speed * (1 / self.character.weight) * 1000
+                case PlyerFacingDirections.UPLEFT.value:
+                    self.y_change -= self.character.speed * (1 / self.character.weight) * 1000
+                    self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
+                case PlyerFacingDirections.UPRIGHT.value:
+                    self.y_change -= self.character.speed * (1 / self.character.weight) * 1000
+                    self.x_change += self.character.speed * (1 / self.character.weight) * 1000
+                case PlyerFacingDirections.DOWNLEFT.value:
+                    self.y_change += self.character.speed * (1 / self.character.weight) * 1000
+                    self.x_change -= self.character.speed * (1 / self.character.weight) * 1000
+                case PlyerFacingDirections.DOWNRIGHT.value:
+                    self.y_change += self.character.speed * (1 / self.character.weight) * 1000
+                    self.x_change += self.character.speed * (1 / self.character.weight) * 1000
+                    
+            self.player_dodge_last = now
+            self.stamina -= 20
+            self.stamina_last = pg.time.get_ticks()
+            self.invincible = True
+                
+    def sneak(self) -> None:
+        if self.stamina <= self.character.stamina:
+            self.speed /= 2
+            self.stamina += 0.5
+        
+    def sprint(self) -> None:
+        if self.stamina > 0:
+            self.speed *= 1.5
+            self.stamina -= 1
+            self.stamina_last = pg.time.get_ticks()
+    
     def input(self):
         keys = pg.key.get_pressed()
         self.movement(keys)
@@ -59,8 +116,14 @@ class Player(pg.sprite.Sprite):
     def movement(self, keys):
         now = pg.time.get_ticks()
         if now - self.player_movement_last >= self.direction_change_delay:
+            
             if keys[SNEAK_KEY]:
-                self.speed = self.speed / 2
+                self.sneak()
+            elif keys[SPRINT_KEY]:
+                self.sprint()
+                
+            if keys[DODGE_KEY]:
+                self.dodge()
                 
             move_vec = pg.math.Vector2(keys[MOVE_RIGHT_KEY] - keys[MOVE_LEFT_KEY], keys[MOVE_DOWN_KEY] - keys[MOVE_UP_KEY])
             # Check if the player is changing direction
@@ -88,8 +151,9 @@ class Player(pg.sprite.Sprite):
             
     def attack(self) -> None:
         now = pg.time.get_ticks()
-        if now - self.character.equipped.last >= self.character.equipped.cooldown:
+        if now - self.character.equipped.last >= self.character.equipped.cooldown and self.stamina >= 20:
             self.character.equipped.last = now
+            self.stamina -= 20
             match self.facing.normalize():
                 case PlyerFacingDirections.UP.value:
                     Attack(self.game, self.character.equipped, (self.rect.x + 16, self.rect.y - self.game.tile_size + 16))
@@ -107,7 +171,9 @@ class Player(pg.sprite.Sprite):
                     Attack(self.game, self.character.equipped, (self.rect.x - self.game.tile_size + 16, self.rect.y + self.game.tile_size + 16)) 
                 case PlyerFacingDirections.DOWNRIGHT.value:
                     Attack(self.game, self.character.equipped, (self.rect.x + self.game.tile_size + 16, self.rect.y + self.game.tile_size + 16)) 
-    
+
+        self.stamina_last = pg.time.get_ticks()
+        
     def die(self) -> None:
         self.game.exit_game()
             
@@ -119,7 +185,7 @@ class Player(pg.sprite.Sprite):
     def collide_obstacle(self, direction : str) -> None:
         hits = pg.sprite.spritecollide(self, self.game.obstacle_sprites, False)
         
-        if hits: 
+        if hits and not self.invincible: 
             if direction == 'x':
                 if self.x_change > 0:
                     self.rect.x = hits[0].rect.left - self.rect.width
@@ -137,7 +203,7 @@ class Player(pg.sprite.Sprite):
         
         if now - self.enemy_collision_last >= self.character.endurance:
             hits = pg.sprite.spritecollide(self, self.game.enemy_sprites, False)
-            if hits:
+            if hits and not self.invincible:
                 for sprite in hits:
                     if pg.sprite.collide_mask(self, sprite):
                         self.reduce_health_points(sprite.monster.equipped.damage)
@@ -148,6 +214,7 @@ class Player(pg.sprite.Sprite):
   
     def update(self) -> None:
         self.input()
+        self.refill_stamina()
         self.collide_enemy()
         
         self.rect.x += self.x_change

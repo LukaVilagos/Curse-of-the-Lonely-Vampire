@@ -24,6 +24,7 @@ class Character:
         self.speed = 5
         self.weight = 100
         self.endurance = 700
+        self.stamina = 100
         self.inventory = inventory
         self.equipped = False
         self.mele = BASIC_MACE
