@@ -5,12 +5,13 @@ from classes.CameraGroup import CameraGroup
 from classes.Healthbar import Healthbar
 
 class Play:
-    def __init__(self, game, tilemap : [], camera : CameraGroup) -> None:
+    def __init__(self, game, tilemap : []) -> None:
         self.game = game
         self.tilemap = tilemap
-        self.camera = camera
         self.player = None
         self.create_tilemap()
+        self.camera = CameraGroup(self.game)
+        self.healthbar = Healthbar(self.game, self.player)
         
     def run_play(self) -> None:
         for event in pg.event.get():
@@ -23,8 +24,8 @@ class Play:
                     self.game.pause_game()
                     
     def draw_play(self) -> None:
-        self.player.custom_update()
         self.camera.draw(self.player)
+        self.healthbar.draw()
         
     def create_tilemap(self) -> None:
         build_map(self)

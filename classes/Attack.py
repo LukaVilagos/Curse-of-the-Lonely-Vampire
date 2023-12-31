@@ -12,7 +12,7 @@ class Attack(pg.sprite.Sprite):
         self.hit = False
         self.lifespan = 100
         self.last = pg.time.get_ticks()
-        super().__init__(self.game.player_sprites)
+        super().__init__(self.game.attack_sprites)
         
     def update(self) -> None:
         #if sprite is visible
@@ -35,6 +35,5 @@ class Attack(pg.sprite.Sprite):
             for sprite in hits:
                 if pg.sprite.collide_mask(self, sprite) and sprite.alive:
                     sprite.reduce_health_points(self.weapon.damage)
-
-            self.hit = True
+                    self.hit = True
                 

@@ -1,5 +1,7 @@
 from enum import Enum
 
 class Colors(Enum):
-    WHITE = "#ffffff"
-    BLACK = "#000000"
+    WHITE = (255, 255, 255)
+    GRAY = (127, 127, 127)
+    BLACK = (0, 0, 0)
+    RED = (255, 0, 0)

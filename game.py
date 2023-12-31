@@ -6,14 +6,12 @@ from classes.Menu import Menu
 from classes.Play import Play
 from classes.InventoryScreen import InventoryScreen
 from classes.Options import Options
-from classes.CameraGroup import CameraGroup
 from utils.center_image import *
 
 def main():
     game = Game()
-    camera = CameraGroup(game)
     menu = Menu(game)
-    play = Play(game, STAGE_1, camera)
+    play = Play(game, STAGE_1)
     inventory_screen = InventoryScreen(game)
     options = Options(game)
 

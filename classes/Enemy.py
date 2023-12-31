@@ -31,3 +31,6 @@ class Enemy(pg.sprite.Sprite):
         self.alive = False
         self.game.enemy_sprites.remove(self)
         del self
+        
+    def update(self) -> None:
+        pass

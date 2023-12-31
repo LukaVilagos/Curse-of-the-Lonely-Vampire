@@ -9,6 +9,7 @@ class Player(pg.sprite.Sprite):
         self.game = game
         self.character = character
         self.health_points = self.character.health_points
+        self.speed = self.character.speed
         
         witdth = self.character.image.get_width()
         height = self.character.image.get_height()
@@ -22,10 +23,10 @@ class Player(pg.sprite.Sprite):
         self.y_change = 0
         self.facing = PlyerFacingDirections.DOWN.value
         
-        self.delay = 100
+        self.direction_change_delay = 100
         self.enemy_collision_last = pg.time.get_ticks()
         self.player_movement_last = pg.time.get_ticks()
-        super().__init__(self.game.player_sprites)
+        super().__init__(self.game.player_sprite)
 
     def knock_back(self) -> None:
         match self.facing.normalize():
@@ -55,22 +56,21 @@ class Player(pg.sprite.Sprite):
         self.movement(keys)
         self.attack_input(keys)
 
-    def attack_input(self, keys):
-        if keys[ATTACK_KEY]:
-            self.attack()
-
     def movement(self, keys):
         now = pg.time.get_ticks()
-        if now - self.player_movement_last >= self.delay:
+        if now - self.player_movement_last >= self.direction_change_delay:
+            if keys[SNEAK_KEY]:
+                self.speed = self.speed / 2
+                
             move_vec = pg.math.Vector2(keys[MOVE_RIGHT_KEY] - keys[MOVE_LEFT_KEY], keys[MOVE_DOWN_KEY] - keys[MOVE_UP_KEY])
             # Check if the player is changing direction
             if move_vec.x != 0 or move_vec.y != 0:
                 # If the player is already moving in the same direction, scale the vector to the speed
                 if move_vec.x == self.facing.x and move_vec.y == self.facing.y:
-                    move_vec.scale_to_length(self.character.speed)
+                    move_vec.scale_to_length(self.speed)
                 elif (move_vec.x == 1 or move_vec.x == -1) and (move_vec.y == 1 or move_vec.y == -1):
                     self.facing = move_vec
-                    move_vec.scale_to_length(self.character.speed) 
+                    move_vec.scale_to_length(self.speed) 
                 # Otherwise, set the vector to zero and decrease the delay
                 else:
                     self.facing = move_vec.normalize()
@@ -80,6 +80,11 @@ class Player(pg.sprite.Sprite):
 
             self.x_change += move_vec.x
             self.y_change += move_vec.y
+            self.speed = self.character.speed
+            
+    def attack_input(self, keys):
+        if keys[ATTACK_KEY]:
+            self.attack()
             
     def attack(self) -> None:
         now = pg.time.get_ticks()
@@ -129,17 +134,19 @@ class Player(pg.sprite.Sprite):
                     
     def collide_enemy(self) -> None:
         now = pg.time.get_ticks()
+        
         if now - self.enemy_collision_last >= self.character.endurance:
-            self.enemy_collision_last = now
             hits = pg.sprite.spritecollide(self, self.game.enemy_sprites, False)
-            
             if hits:
                 for sprite in hits:
                     if pg.sprite.collide_mask(self, sprite):
                         self.reduce_health_points(sprite.monster.equipped.damage)
                         self.knock_back()
+                        
+                        self.enemy_collision_last = now
+                        
   
-    def custom_update(self) -> None:
+    def update(self) -> None:
         self.input()
         self.collide_enemy()
         

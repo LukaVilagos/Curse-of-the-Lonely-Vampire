@@ -23,7 +23,7 @@ class Character:
         self.health_points = health_point_calc(charcter_class)
         self.speed = 5
         self.weight = 100
-        self.endurance = 500
+        self.endurance = 700
         self.inventory = inventory
         self.equipped = False
         self.mele = BASIC_MACE

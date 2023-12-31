@@ -18,7 +18,8 @@ class Game:
         self.play = False
         self.inventory = False
         self.options = False
-        self.player_sprites = pg.sprite.Group()
+        self.player_sprite = pg.sprite.Group()
+        self.attack_sprites = pg.sprite.Group()
         self.enemy_sprites = pg.sprite.Group()
         self.obstacle_sprites = pg.sprite.Group()
         self.ground_sprites = pg.sprite.Group()
@@ -35,10 +36,11 @@ class Game:
             options.run_options()
             
     def update(self):
-        self.player_sprites.update()
+        self.player_sprite.update()
         self.enemy_sprites.update()
         self.obstacle_sprites.update()
         self.ground_sprites.update()
+        self.attack_sprites.update()
         self.ui_sprites.update()
         
     def draw(self, menu : Menu, play : Play, inventory_screen : InventoryScreen, options : Options) -> None:
