@@ -30,18 +30,11 @@ class Player(pg.sprite.Sprite):
         self.player_movement_last = pg.time.get_ticks()
         self.player_dodge_last = pg.time.get_ticks()
         self.stamina_last = pg.time.get_ticks()
-        self.stamina_refill = False
         super().__init__(self.game.player_sprite)
 
     def refill_stamina(self) -> None:
         now = pg.time.get_ticks()
-        if now - self.stamina_last >= 1000:
-            self.stamina_refill = True
-            self.stamina_last = now  
-        else:
-            self.stamina_refill = False
-
-        if self.stamina <= 100: 
+        if now - self.stamina_last >= 1000 and self.stamina < 100:
             self.stamina += 1
 
     def knock_back(self) -> None:
@@ -98,8 +91,8 @@ class Player(pg.sprite.Sprite):
             self.invincible = True
                 
     def sneak(self) -> None:
+        self.speed /= 2
         if self.stamina <= self.character.stamina:
-            self.speed /= 2
             self.stamina += 0.5
         
     def sprint(self) -> None:
@@ -185,7 +178,7 @@ class Player(pg.sprite.Sprite):
     def collide_obstacle(self, direction : str) -> None:
         hits = pg.sprite.spritecollide(self, self.game.obstacle_sprites, False)
         
-        if hits and not self.invincible: 
+        if hits: 
             if direction == 'x':
                 if self.x_change > 0:
                     self.rect.x = hits[0].rect.left - self.rect.width
