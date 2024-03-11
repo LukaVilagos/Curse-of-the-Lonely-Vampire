@@ -36,12 +36,13 @@ class Game:
             options.run_options()
             
     def update(self):
-        self.player_sprite.update()
-        self.enemy_sprites.update()
-        self.obstacle_sprites.update()
-        self.ground_sprites.update()
-        self.attack_sprites.update()
-        self.ui_sprites.update()
+        if self.play:
+            self.player_sprite.update()
+            self.enemy_sprites.update()
+            self.obstacle_sprites.update()
+            self.ground_sprites.update()
+            self.attack_sprites.update()
+            self.ui_sprites.update()
         
     def draw(self, menu : Menu, play : Play, inventory_screen : InventoryScreen, options : Options) -> None:
         self.clock.tick(self.fps)  

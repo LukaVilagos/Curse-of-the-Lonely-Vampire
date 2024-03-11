@@ -6,7 +6,6 @@ from classes.Menu import Menu
 from classes.Play import Play
 from classes.InventoryScreen import InventoryScreen
 from classes.Options import Options
-from utils.center_image import *
 
 def main():
     game = Game()
