@@ -119,35 +119,34 @@ class Player(pg.sprite.Sprite):
 
     def movement(self, keys):
         now = pg.time.get_ticks()
-        if now - self.player_movement_last >= self.direction_change_delay:
+               
+        if keys[SNEAK_KEY]:
+            self.sneak()
+        elif keys[SPRINT_KEY]:
+            self.sprint()
             
-            if keys[SNEAK_KEY]:
-                self.sneak()
-            elif keys[SPRINT_KEY]:
-                self.sprint()
+        if keys[DODGE_KEY]:
+            self.dodge()
+            
+        move_vec = pg.math.Vector2(keys[MOVE_RIGHT_KEY] - keys[MOVE_LEFT_KEY], keys[MOVE_DOWN_KEY] - keys[MOVE_UP_KEY])
+        # Check if the player is changing direction
+        if move_vec.x != 0 or move_vec.y != 0:
+            # If the player is already moving in the same direction, scale the vector to the speed
+            if move_vec.x == self.facing.x and move_vec.y == self.facing.y:
+                move_vec.scale_to_length(self.speed)
+            elif (move_vec.x == 1 or move_vec.x == -1) and (move_vec.y == 1 or move_vec.y == -1):
+                self.facing = move_vec
+                move_vec.scale_to_length(self.speed) 
+            # Otherwise, set the vector to zero and decrease the delay
+            else:
+                self.facing = move_vec.normalize()
+                move_vec.scale_to_length(0)
                 
-            if keys[DODGE_KEY]:
-                self.dodge()
-                
-            move_vec = pg.math.Vector2(keys[MOVE_RIGHT_KEY] - keys[MOVE_LEFT_KEY], keys[MOVE_DOWN_KEY] - keys[MOVE_UP_KEY])
-            # Check if the player is changing direction
-            if move_vec.x != 0 or move_vec.y != 0:
-                # If the player is already moving in the same direction, scale the vector to the speed
-                if move_vec.x == self.facing.x and move_vec.y == self.facing.y:
-                    move_vec.scale_to_length(self.speed)
-                elif (move_vec.x == 1 or move_vec.x == -1) and (move_vec.y == 1 or move_vec.y == -1):
-                    self.facing = move_vec
-                    move_vec.scale_to_length(self.speed) 
-                # Otherwise, set the vector to zero and decrease the delay
-                else:
-                    self.facing = move_vec.normalize()
-                    move_vec.scale_to_length(0)
-                    
-                    self.player_movement_last = now
+                self.player_movement_last = now
 
-            self.x_change += move_vec.x
-            self.y_change += move_vec.y
-            self.speed = self.character.speed
+        self.x_change += move_vec.x
+        self.y_change += move_vec.y
+        self.speed = self.character.speed
             
     def attack_input(self, keys):
         if keys[ATTACK_KEY]:

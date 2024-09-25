@@ -10,7 +10,8 @@ from constants.characters import CHARACTER
 def build_map(self) -> None:
     for i, row in enumerate(self.tilemap):
         for j, column in enumerate(row):
-            Ground(self.game, get_sprite_pos(j, i, self.game.tile_size), ground_tile)
+            if column != "X":
+                Ground(self.game, get_sprite_pos(j, i, self.game.tile_size), ground_tile)
             if column == "W":
                 Obstacle(self.game, get_sprite_pos(j ,i, self.game.tile_size), wall_tile)
             elif column == "B":

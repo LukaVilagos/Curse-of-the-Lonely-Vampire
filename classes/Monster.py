@@ -8,5 +8,5 @@ class Monster:
         self.description = description
         self.health_points = health_points
         self.loot = loot
-        self.speed = 5
+        self.speed = 2
         self.equipped = None
