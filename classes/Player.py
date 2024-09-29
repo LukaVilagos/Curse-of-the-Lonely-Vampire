@@ -1,8 +1,10 @@
 from utils.pg import pg
 from classes.Character import Character
 from classes.Attack import Attack
+from classes.Effect import Effect, EffectTypes
 from enums.PlayerFacingDirections import PlyerFacingDirections
 from config.keybinds import *
+from constants.effects import SlowEffect
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, pos, character: Character, scale = 1) -> None:
@@ -13,7 +15,7 @@ class Player(pg.sprite.Sprite):
         self.stamina = self.character.stamina
         
         self.dodge_speed = 0
-        self.dodge_speed_max = 100
+        self.dodge_speed_max = 50
         self.dodging = False
         self.invincible = False
         
@@ -28,12 +30,13 @@ class Player(pg.sprite.Sprite):
         self.x_change = 0
         self.y_change = 0
         self.facing = PlyerFacingDirections.DOWN.value
-        
-        self.direction_change_delay = 100
+
         self.enemy_collision_last = pg.time.get_ticks()
         self.player_movement_last = pg.time.get_ticks()
         self.player_dodge_last = pg.time.get_ticks()
         self.stamina_last = pg.time.get_ticks()
+
+        self.effects = []
         
         super().__init__(self.game.player_sprite)
 
@@ -68,38 +71,46 @@ class Player(pg.sprite.Sprite):
     def dodge(self) -> None:
         now = pg.time.get_ticks()
         if self.stamina >= 20 and now - self.player_dodge_last >= 500:
-            pass
-                    
+            self.dodging = True
+            self.invincible = True
+            self.dodge_speed = 0
             self.player_dodge_last = now
             self.stamina -= 20
             self.stamina_last = pg.time.get_ticks()
                
-    def dodging(self) -> None:
-        if self.dodge_speed < self.dodge_speed_max:
-            match self.facing.normalize():
-                case PlyerFacingDirections.UP.value:
-                    self.y_change -= self.dodge_speed
-                case PlyerFacingDirections.DOWN.value:
-                    self.y_change += self.dodge_speed
-                case PlyerFacingDirections.LEFT.value:
-                    self.x_change -= self.dodge_speed
-                case PlyerFacingDirections.RIGHT.value:
-                    self.x_change += self.dodge_speed
-                case PlyerFacingDirections.UPLEFT.value:
-                    self.y_change -= self.dodge_speed
-                    self.x_change -= self.dodge_speed
-                case PlyerFacingDirections.UPRIGHT.value:
-                    self.y_change -= self.dodge_speed
-                    self.x_change += self.dodge_speed
-                case PlyerFacingDirections.DOWNLEFT.value:
-                    self.y_change += self.dodge_speed
-                    self.x_change -= self.dodge_speed
-                case PlyerFacingDirections.DOWNRIGHT.value:
-                    self.y_change += self.dodge_speed
-                    self.x_change += self.dodge_speed
-        # self.character.speed * (1 / self.character.weight) * 1000
-        else:
-            self.dodge_speed = 0
+    def is_dodging(self) -> None:
+        if self.dodging:
+            if self.dodge_speed < self.dodge_speed_max:
+                self.dodge_speed += (1 / self.character.weight) * 1000
+
+                match self.facing.normalize():
+                    case PlyerFacingDirections.UP.value:
+                        self.y_change -= self.dodge_speed
+                    case PlyerFacingDirections.DOWN.value:
+                        self.y_change += self.dodge_speed
+                    case PlyerFacingDirections.LEFT.value:
+                        self.x_change -= self.dodge_speed
+                    case PlyerFacingDirections.RIGHT.value:
+                        self.x_change += self.dodge_speed
+                    case PlyerFacingDirections.UPLEFT.value:
+                        self.y_change -= self.dodge_speed
+                        self.x_change -= self.dodge_speed
+                    case PlyerFacingDirections.UPRIGHT.value:
+                        self.y_change -= self.dodge_speed
+                        self.x_change += self.dodge_speed
+                    case PlyerFacingDirections.DOWNLEFT.value:
+                        self.y_change += self.dodge_speed
+                        self.x_change -= self.dodge_speed
+                    case PlyerFacingDirections.DOWNRIGHT.value:
+                        self.y_change += self.dodge_speed
+                        self.x_change += self.dodge_speed
+
+                self.update_position_with_collision(self.x_change, "x")
+                self.update_position_with_collision(self.y_change, "y")
+
+            if self.dodge_speed >= self.dodge_speed_max:
+                self.dodging = False 
+                self.invincible = False
      
     def sneak(self) -> None:
         self.speed /= 2
@@ -189,7 +200,7 @@ class Player(pg.sprite.Sprite):
     def collide_obstacle(self, direction : str) -> None:
         hits = pg.sprite.spritecollide(self, self.game.obstacle_sprites, False)
         
-        if hits and not self.invincible: 
+        if hits: 
             if direction == 'x':
                 if self.x_change > 0:
                     self.rect.x = hits[0].rect.left - self.rect.width
@@ -201,10 +212,18 @@ class Player(pg.sprite.Sprite):
                     self.rect.y = hits[0].rect.top - self.rect.height
                 if self.y_change < 0:
                     self.rect.y = hits[0].rect.bottom
+
+    def update_position_with_collision(self, change, axis):
+        if axis == "x":
+            self.rect.x += change
+            self.collide_obstacle("x")
+        elif axis == "y":
+            self.rect.y += change
+            self.collide_obstacle("y")
                     
     def collide_enemy(self) -> None:
         now = pg.time.get_ticks()
-        
+
         if now - self.enemy_collision_last >= self.character.endurance:
             hits = pg.sprite.spritecollide(self, self.game.enemy_sprites, False)
             if hits and not self.invincible:
@@ -213,19 +232,36 @@ class Player(pg.sprite.Sprite):
                         self.reduce_health_points(sprite.monster.equipped.damage)
                         self.knock_back()
                         
-                        self.enemy_collision_last = now
+                        if not any(effect.type == EffectTypes.SLOW for effect in self.effects):
+                            slow_effect = SlowEffect()
+                            self.effects.append(slow_effect)
                         
+                        self.enemy_collision_last = now
+
+    def apply_effects(self):
+        for effect in self.effects:
+            if effect.duration <= 0:
+                self.effects.remove(effect)
+            
+            effect.apply(self)
+
+    def reduce_effects_duration(self):
+        for effect in self.effects:
+            effect.duration -= 1
   
     def update(self) -> None:
         self.input()
-        # self.dodging()
+        self.is_dodging()
+        
         self.refill_stamina()
         self.collide_enemy()
+
+        self.apply_effects()
+        self.reduce_effects_duration()
         
-        self.rect.x += self.x_change
-        self.collide_obstacle("x")
-        self.rect.y += self.y_change
-        self.collide_obstacle("y")
+        if not self.dodging:
+            self.update_position_with_collision(self.x_change, "x")
+            self.update_position_with_collision(self.y_change, "y")
 
         self.x_change = 0
         self.y_change = 0
