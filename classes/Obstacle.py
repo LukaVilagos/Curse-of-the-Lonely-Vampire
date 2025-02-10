@@ -1,7 +1,7 @@
 from utils.pg import pg
 
 class Obstacle(pg.sprite.Sprite):
-    def __init__(self, game, pos : (), image) -> None:
+    def __init__(self, game, pos : tuple, image) -> None:
         self.game = game
         self.image = image
         self.rect = self.image.get_rect(topleft = pos)

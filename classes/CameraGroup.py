@@ -47,6 +47,6 @@ class CameraGroup:
         self.draw_sprites(self.game.enemy_sprites)
         self.draw_sprites(self.game.player_sprite)
         self.draw_sprites(self.game.attack_sprites)
-        self.game.ui_sprites.draw(self.game.screen)
+        self.draw_sprites(self.game.ui_sprites)
         
         self.display_surface.blit(self.ground_surf,self.ground_rect)
