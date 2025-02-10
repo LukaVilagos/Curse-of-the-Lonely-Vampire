@@ -1,7 +1,7 @@
 from utils.pg import pg
 
 class NPC:
-    def __init__(self, image, name: str, description: str, location, dialogue: [], scale):
+    def __init__(self, image, name: str, description: str, location, dialogue: list, scale):
         witdth = image.get_width()
         height = image.get_height()
         self.image = pg.transform.scale(image, (int(witdth * scale), int(height * scale)))

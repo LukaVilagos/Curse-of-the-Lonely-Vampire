@@ -8,7 +8,7 @@ from constants.fonts import font
 from enums.Colors import Colors
 
 class Play:
-    def __init__(self, game, tilemap : []) -> None:
+    def __init__(self, game, tilemap : list) -> None:
         self.game = game
         self.tilemap = tilemap
         self.player = None
